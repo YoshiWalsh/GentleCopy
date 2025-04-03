@@ -216,7 +216,7 @@ namespace GentleCopy
                 AddQueueEntries(subtasks);
             } catch (Exception ex)
             {
-                Console.WriteLine("err - " + ex.ToString());
+                Console.WriteLine("Attempt #" + (task.AttemptCount + 1).ToString() + " err - " + ex.ToString());
             }
 
             return true;
