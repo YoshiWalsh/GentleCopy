@@ -196,22 +196,28 @@ namespace GentleCopy
                 Path = task.Path,
             }});
 
-            var processor = taskProcessors[task.TaskType];
-            var subtasks = processor.ProcessQueueTask(task);
-            if(subtasks == null)
+            try
             {
-                subtasks = new List<NewQueueEntry>();
+                var processor = taskProcessors[task.TaskType];
+                var subtasks = processor.ProcessQueueTask(task);
+                if (subtasks == null)
+                {
+                    subtasks = new List<NewQueueEntry>();
+                }
+
+                // Mark the current task as completed
+                subtasks.Add(new NewQueueEntry()
+                {
+                    Status = QueueEntryStatus.Completed,
+                    TaskType = task.TaskType,
+                    Path = task.Path,
+                });
+
+                AddQueueEntries(subtasks);
+            } catch (Exception ex)
+            {
+                Console.WriteLine("err - " + ex.ToString());
             }
-
-            // Mark the current task as completed
-            subtasks.Add(new NewQueueEntry()
-            {
-                Status = QueueEntryStatus.Completed,
-                TaskType = task.TaskType,
-                Path = task.Path,
-            });
-
-            AddQueueEntries(subtasks);
 
             return true;
         }
