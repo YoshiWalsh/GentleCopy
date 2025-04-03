@@ -38,11 +38,22 @@ namespace GentleCopy.TaskProcessors
             }
             else
             {
+                try
+                {
+                    File.Copy(task.Path, destinationPath, true);
+                    File.SetCreationTimeUtc(destinationPath, info.CreationTimeUtc);
+                    File.SetLastWriteTimeUtc(destinationPath, info.LastWriteTimeUtc);
+                    File.SetLastAccessTimeUtc(destinationPath, info.LastAccessTimeUtc);
+                } catch (IOException ex)
+                {
+                    if (ex.Message.Contains("cloud file provider is not running")) {
+                        Console.WriteLine("OneDrive file, skipping");
+                        return null;
+                    }
 
-                File.Copy(task.Path, destinationPath, true);
-                File.SetCreationTimeUtc(destinationPath, info.CreationTimeUtc);
-                File.SetLastWriteTimeUtc(destinationPath, info.LastWriteTimeUtc);
-                File.SetLastAccessTimeUtc(destinationPath, info.LastAccessTimeUtc);
+                    // Unknown error, rethrow
+                    throw;
+                }
             }
 
             return null;
